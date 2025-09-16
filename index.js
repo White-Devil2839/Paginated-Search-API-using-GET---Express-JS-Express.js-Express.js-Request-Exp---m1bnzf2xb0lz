@@ -38,7 +38,7 @@ app.get('/search', (req, res) => {
   const start = (page - 1) * limit;
   const end = start + limit;
 
-  const dataArr = filtered.splice(start, end);
+  const dataArr = filtered.slice(start, end);
 
 
   res.status(200).json({
