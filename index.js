@@ -8,26 +8,30 @@ const allArticles = JSON.parse(fs.readFileSync('./db.json', 'utf-8'));
 
 app.get('/search', (req, res) => {
 
-  try {
+
  let { name, limit, page } = req.query
 
  if(!name){
   res.status(400).json({ "error": "Search name parameter is required." });
  }
 
+ limit= Number(limit);
+ page=Number(page);
 
   let filtered = [...allArticles];
+
   if (name) {
     filtered = allArticles.filter(article =>
-      article.name.toLowerCase().includes(name.toLowerCase())
+      article.title.toLowerCase().includes(name.toLowerCase())
     );
   }
 
 
-  if (!limit) {
+
+  if (isNaN(limit) || limit <= 0) {
     limit = 5
   }
-  if (!page) {
+  if  (isNaN(page) || page <= 0){
     page = 1;
   }
 
@@ -40,6 +44,8 @@ app.get('/search', (req, res) => {
 
   const dataArr = filtered.slice(start, end);
 
+  console.log("data",totalPages,start,end, page, dataArr )
+
 
   res.status(200).json({
     "currentPage": page,
@@ -48,19 +54,6 @@ app.get('/search', (req, res) => {
     "articles": dataArr
 
   })
-
-
-  } catch (error) {
-
-  }
-
- 
-
-
-
-
-
-
 
 
 });
