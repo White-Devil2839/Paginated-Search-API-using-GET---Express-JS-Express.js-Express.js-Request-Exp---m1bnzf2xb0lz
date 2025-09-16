@@ -8,14 +8,66 @@ const allArticles = JSON.parse(fs.readFileSync('./db.json', 'utf-8'));
 
 app.get('/search', (req, res) => {
 
- // TODO: Implement the search and pagination logic here
+  try {
+ let { name, limit, page } = req.query
+
+ if(!name){
+  res.status(400).json({ "error": "Search name parameter is required." });
+ }
+
+
+  let filtered = [...allArticles];
+  if (name) {
+    filtered = allArticles.filter(article =>
+      article.name.toLowerCase().includes(name.toLowerCase())
+    );
+  }
+
+
+  if (!limit) {
+    limit = 5
+  }
+  if (!page) {
+    page = 1;
+  }
+
+
+
+  const totalPages = Math.ceil(filtered.length / limit);
+
+  const start = (page - 1) * limit;
+  const end = start + limit;
+
+  const dataArr = filtered.splice(start, end);
+
+
+  res.status(200).json({
+    "currentPage": page,
+    "totalPages": totalPages,
+    "totalResults": filtered.length,
+    "articles": dataArr
+
+  })
+
+
+  } catch (error) {
+
+  }
+
+ 
+
+
+
+
+
+
 
 
 });
 
 
-  app.listen(port, () => {
-    console.log(`Server is running on http://localhost:${port}`);
-  });
+app.listen(port, () => {
+  console.log(`Server is running on http://localhost:${port}`);
+});
 
-  module.exports = {app}
+module.exports = { app }
